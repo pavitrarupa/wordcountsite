@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Word Count Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="word_count.js"></script>
+    <link rel="stylesheet" href="css.css"/>
+  </head>
+  <body>
+    <h1>WORD COUNT APPLICATION<br></h1>
+    <p><b>ENTER ANY TEXT FILE AND GET THE TOP 10 MOST FREQUENTLY REPEATED WORDS FROM YOU FILE!!<br></b></p>
+    <form>
+      <input type="file" id="fileInput" accept=".txt"/>
+    </form>
+    <div id="wordCount"></div>
+    <script>
+        $(document).ready(function() {
+  $("#fileInput").on("change", function(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(event) {
+      var contents = event.target.result;
+      var words = contents.split(/\W+/);
+
+      var wordCounts = {};
+      for (var i = 0; i < words.length; i++) {
+        var word = words[i].toLowerCase();
+        if (!wordCounts[word]) wordCounts[word] = 0;
+        wordCounts[word]++;
+      }
+
+      var sortedWords = Object.keys(wordCounts).sort(function(a, b) {
+        return wordCounts[b] - wordCounts[a];
+      });
+
+      var topWords = sortedWords.slice(0, 10);
+
+      var wordCountList = $("<ol>");
+      for (var i = 0; i < topWords.length; i++) {
+        var word = topWords[i];
+        var count = wordCounts[word];
+        wordCountList.append($("<li>").text(word + ": " + count));
+      }
+
+      $("#wordCount").empty().append(wordCountList);
+    };
+    reader.readAsText(file);
+    });
+    });
+    </script>
+  </body>
+</html>
